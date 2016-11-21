@@ -17,21 +17,28 @@ def oeHypergeom(N,N1,N2,N12,mode=['over','under','both']):
     else:
       raise Exception('Mode is not valid')
 
-def pvalues(a):
+def pHypergeom(a):
     x,y = a
     N = len(x)
     N1 = x.sum()
     N2 = y.sum()
     N12 = (x*y).sum()
     return st.hypergeom.sf(N12-1,N,N1,N2)
+
+def projectMatBip(mat):
+    A,B = np.where(mat==1)
+    B = B + len(ID)
+    edges = zip(A,B)
+    g = igraph.Graph.Bipartite([0]*len(ID)+[1]*len(day),edges)
+    g = g.bipartite_projection()[0]
+    return g
     
 def SVN(mat,tres):
     N = mat.shape[0]
-    A,B = np.triu_indices(N,k=1)
-    X = zip(A,B)
+    X = projectMatBip(mat).get_edgelist()
     A = mat[X]
     p = Pool(processes=16)
-    D = zip(X, p.map(pvalues, A,16))
+    D = zip(X, p.map(pHypergeom, A,16))
     D = sorted(D,key=lambda x : x[1])
     P = np.array(zip(*D)[1])
     K = 2*tres/(N*(N-1)) * np.arange(1,len(P)+1)
