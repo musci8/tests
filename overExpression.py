@@ -45,4 +45,4 @@ def SVN(mat,tres):
     i = np.where(P<K)[0]
     edges = list(np.array(zip(*D)[0])[i])
     g = igraph.Graph(N,edges)
-    return g,edges
+    return g
