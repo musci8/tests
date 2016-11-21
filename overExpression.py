@@ -1,6 +1,6 @@
 import scipy.stats as st
 
-def oe_year(N,N1,N2,N12,mode=['over','under','both']):
+def oeHypergeom(N,N1,N2,N12,mode=['over','under','both']):
     if mode=='over':
       p1 = st.hypergeom.sf(N12-1,N,N1,N2)
       return [p1]
