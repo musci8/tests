@@ -16,6 +16,14 @@ def oeHypergeom(N,N1,N2,N12,mode=['over','under','both']):
       return [p1,p2]
     else:
       raise Exception('Mode is not valid')
+
+def pvalues(a):
+    x,y = a
+    N = len(x)
+    N1 = x.sum()
+    N2 = y.sum()
+    N12 = (x*y).sum()
+    return st.hypergeom.sf(N12-1,N,N1,N2)
     
 def SVN(mat,tres):
     N = mat.shape[0]
