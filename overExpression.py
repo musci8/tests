@@ -1,6 +1,6 @@
 import scipy.stats as st
 import numpy as np
-from multiprocessing import Pool
+from multiprocessing import Pool,cpu_count()
 import igraph 
 
 def oeHypergeom(N,N1,N2,N12,mode=['over','under','both']):
@@ -27,9 +27,9 @@ def pHypergeom(a):
 
 def projectMatBip(mat):
     A,B = np.where(mat==1)
-    B = B + len(ID)
+    B = B + len(A)
     edges = zip(A,B)
-    g = igraph.Graph.Bipartite([0]*len(ID)+[1]*len(day),edges)
+    g = igraph.Graph.Bipartite([0]*len(A)+[1]*len(B),edges)
     g = g.bipartite_projection()[0]
     return g
     
@@ -37,12 +37,12 @@ def SVN(mat,tres):
     N = mat.shape[0]
     X = projectMatBip(mat).get_edgelist()
     A = mat[X]
-    p = Pool(processes=16)
-    D = zip(X, p.map(pHypergeom, A,16))
+    p = Pool(processes=cpu_count())
+    D = zip(X, p.map(pHypergeom, A))
     D = sorted(D,key=lambda x : x[1])
     P = np.array(zip(*D)[1])
     K = 2*tres/(N*(N-1)) * np.arange(1,len(P)+1)
-    i = np.where(P<K)[0]
+    i = np.where(P<K)[-1]
     edges = list(np.array(zip(*D)[0])[i])
     g = igraph.Graph(N,edges)
     return g
