@@ -1,6 +1,6 @@
 import scipy.stats as st
 import numpy as np
-from multiprocessing import Pool,cpu_count()
+from multiprocessing import Pool,cpu_count
 import igraph 
 
 def oeHypergeom(N,N1,N2,N12,mode=['over','under','both']):
@@ -13,7 +13,7 @@ def oeHypergeom(N,N1,N2,N12,mode=['over','under','both']):
     elif mode=='both':
       p1 = st.hypergeom.sf(N12-1,N,N1,N2)
       p2 = st.hypergeom.cdf(N12,N,N1,N2) 
-      return [p1,p2]
+      return (p1,p2)
     else:
       raise Exception('Mode is not valid')
 
@@ -27,10 +27,10 @@ def pHypergeom(a):
 
 def projectMatBip(mat):
     A,B = np.where(mat==1)
-    B = B + len(A)
+    B = B + len(set(A))
     edges = zip(A,B)
-    g = igraph.Graph.Bipartite([0]*len(A)+[1]*len(B),edges)
-    g = g.bipartite_projection()[0]
+    g = igraph.Graph.Bipartite([0]*len(set(A))+[1]*len(set(B)),edges)
+    g = g.bipartite_projection(which=0)
     return g
     
 def SVN(mat,tres):
